@@ -1,7 +1,7 @@
 /* A simplified way to customize */
-#define USE_TERM_STATUS 1
-#define BOTTOM_TITLE    0
-#define HILIGHT_CURRENT 1
+#define USE_TERM_STATUS 0
+#define BOTTOM_TITLE    1
+#define HILIGHT_CURRENT 0
 #define HILIGHT_SYNTAX  1
 #define SHOW_NONPRINT   0
 #define HANDLE_MOUSE    1
@@ -24,6 +24,8 @@ static const char   nlstr[1]   = { 0 };
 #endif
 
 /* Helper config functions, not used in main code */
+static void f_selOn(const Arg*), f_selOff(const Arg*);
+static void f_movebothifsel(const Arg*);
 static void f_moveboth(const Arg*);
 static void f_pipeai(const Arg*);
 static void f_pipeline(const Arg*);
@@ -31,10 +33,8 @@ static void f_pipenull(const Arg*);
 
 /* Args to f_spawn */
 #define PROMPT(prompt, default, cmd) { .v = (const char *[]){ "/bin/sh", "-c", \
-	"dmenu -v >/dev/null 2>&1 || DISPLAY=\"\";"\
-	"if [ -n \"$DISPLAY\" ]; then arg=\"`echo \\\"" default "\\\" | dmenu $DMENU_OPTS -p '" prompt "'`\";" \
-	"else if slmenu -v >/dev/null 2>&1; then arg=\"`echo \\\"" default "\\\" | slmenu -t -p '" prompt "'`\";" \
-	"else printf \"\033[0;0H\033[7m"prompt"\033[K\033[0m \" >&2; read arg; fi; fi &&" \
+	"if slmenu -v >/dev/null 2>&1; then arg=\"`echo \\\"" default "\\\" | slmenu -t -p '" prompt "'`\";" \
+	"else printf \"\033[0;0H\033[7m"prompt"\033[K\033[0m \" >&2; read arg; fi &&" \
 	"echo " cmd "\"$arg\" > ${SANDY_FIFO}", NULL } }
 
 #define FIND    PROMPT("Find:",        "${SANDY_FIND}",   "/")
@@ -193,7 +193,6 @@ static const Syntax syntaxes[] = {
 	/* HiWhite */  "$^",
 	/* LoWhite */  "$^",
 	} },
-
 {"sh", "\\.sh$", {
 	/* HiRed   */  "$^",
 	/* LoRed   */  "\\$\\{?[0-9A-Z_!@#$*?-]+\\}?",
@@ -367,9 +366,25 @@ static const int bwattrs[LastFG] = {
 
 static const short  bgcolors[LastBG] = {
 	[DefBG] = -1,
-	[CurBG] = (HILIGHT_CURRENT?COLOR_CYAN:-1),
-	[SelBG] = COLOR_YELLOW,
+	[CurBG] = (HILIGHT_CURRENT?COLOR_WHITE:-1),
+	[SelBG] = COLOR_WHITE,
 };
+
+void
+f_selOn (const Arg *arg) {
+	f_select (&(Arg){ .m = m_stay });
+	selmode = 1;
+}
+
+void
+f_selOff (const Arg *arg) {
+	selmode = 0;
+}
+
+void
+f_movebothifsel (const Arg *arg) {
+	(selmode ? f_move : f_moveboth) (arg);
+}
 
 /* Helper config functions implementation */
 void /* Move both cursor and selection point, thus cancelling the selection */
@@ -396,4 +411,3 @@ f_pipenull(const Arg *arg) {
 	fsel=fcur;
 	f_pipe(arg);
 }
-

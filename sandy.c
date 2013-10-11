@@ -193,6 +193,7 @@ static long      statusflags=S_Running;     /* Status flags, very important, OR'
 static int       lastaction=LastNone;       /* The last action we took (see enums above) */
 static int       cols, lines;               /* Ncurses: to use instead of COLS and LINES, wise */
 static mmask_t   defmmask = 0;              /* Ncurses: mouse event mask */
+static bool	 selmode = 0;
 
 /* Functions */
 /* f_* functions can be linked to an action or keybinding */
@@ -1738,7 +1739,7 @@ t_redo(void) {
 
 bool /* TRUE if any text is selected */
 t_sel(void) {
-	return !(fcur.l==fsel.l && fcur.o == fsel.o);
+	return selmode;
 }
 
 bool /* TRUE if there is anything to undo */
