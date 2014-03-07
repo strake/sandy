@@ -95,7 +95,13 @@ typedef struct {                      /** A command read at the fifo */
 	const Arg arg;                /* Argument to func(), if empty will fill .v = re_match */
 } Command;
 
-#define SYN_COLORS 8
+/* ENUMS */
+/* Colors */
+enum { DefFG, CurFG, SelFG, SpcFG, CtrlFG, Syn0FG, Syn1FG, Syn2FG, Syn3FG, Syn4FG, Syn5FG, Syn6FG, Syn7FG, Syn8FG, Syn9FG, Syn10FG, Syn11FG, Syn12FG, Syn13FG, LastFG, };
+enum { DefBG, CurBG, SelBG, /* WARNING: BGs MUST have a matching FG */     LastBG, };
+
+/* More Typedefs */
+#define SYN_COLORS (LastFG - Syn0FG)
 typedef struct {                      /** A syntax definition */
 	char *name;                   /* Syntax name */
 	char *file_re_text;           /* Apply to files matching this regex */
@@ -111,11 +117,7 @@ struct Undo {                       /** Undo information */
 	Undo *prev;                 /* Previous undo/redo in the ring */
 };
 
-/* ENUMS */
-/* Colors */
-enum { DefFG, CurFG, SelFG, SpcFG, CtrlFG, Syn0FG, Syn1FG, Syn2FG, Syn3FG, Syn4FG, Syn5FG, Syn6FG, Syn7FG, LastFG, };
-enum { DefBG, CurBG, SelBG, /* WARNING: BGs MUST have a matching FG */     LastBG, };
-
+/* More ENUMS */
 /* arg->i to use in f_extsel() */
 enum { ExtDefault, ExtWord, ExtLines, ExtAll, };
 
