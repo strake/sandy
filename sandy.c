@@ -1297,9 +1297,9 @@ i_termwininit(void) {
 		textwin=newwin(lines,cols,0,0);
 	} else {
 		if(titlewin) delwin(titlewin);
-		titlewin=newwin(1,cols,0,0);
+		titlewin=newwin(1,cols,BOTTOM_TITLE?lines-1:0,0);
 		wattron(titlewin,A_REVERSE);
-		textwin=newwin(lines-1,cols,1,0);
+		textwin=newwin(lines-1,cols,BOTTOM_TITLE?0:1,0);
 	}
 	idlok(textwin, TRUE);
 	keypad(textwin, TRUE);
