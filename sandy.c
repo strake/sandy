@@ -1291,7 +1291,7 @@ i_termwininit(void) {
 	noecho();
 	nl();
 	if(textwin) delwin(textwin);
-	if(tigetflag("hs") > 0) {
+	if(USE_TERM_STATUS && tigetflag("hs") > 0) {
 		tsl_str=tigetstr("tsl");
 		fsl_str=tigetstr("fsl");
 		textwin=newwin(lines,cols,0,0);
