@@ -500,6 +500,7 @@ void /* Set syntax with name arg->v */
 f_syntax(const Arg *arg) {
 	int i, j;
 
+	if(!HILIGHT_SYNTAX) return;
 	statusflags|=S_DirtyScr;
 	for(i=0; i<LENGTH(syntaxes); i++)
 		if((arg && arg->v) ? !strcmp(arg->v, syntaxes[i].name)
@@ -1792,4 +1793,3 @@ main(int argc, char **argv){
 	i_edit();
 	i_cleanup(0);
 }
-
