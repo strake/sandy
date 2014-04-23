@@ -70,29 +70,31 @@ typedef union { /** An argument to a f_* function, generic */
 	Filepos (*m)(Filepos);
 } Arg;
 
+typedef struct {
+	void (*func) (const Arg *arg);
+	const Arg arg;
+} Deed;
+
 typedef struct {                      /** A keybinding */
 	union {
 		char c[6];            /* Standard chars */
 		int  i;               /* NCurses code */
 	} keyv;
 	bool (*test[4])(void);        /* Conditions to match, make sure the last one is 0x00 */
-	void (*func)(const Arg *arg); /* Function to perform */
-	const Arg arg;                /* Argument to func() */
+	Deed *deeds;
 } Key;
 
 typedef struct {                      /** A mouse click */
 	mmask_t mask;                 /* Mouse mask */
 	bool place[2];                /* Place fcur / fsel at click place before testing */
 	bool (*test[3])(void);        /* Conditions to match, make sure the last one is 0x00 */
-	void (*func)(const Arg *arg); /* Function to perform */
-	const Arg arg;                /* Argument to func() */
+	Deed *deeds;
 } Click;
 
 typedef struct {                      /** A command read at the fifo */
 	const char *re_text;          /* A regex to match the command, must have a parentheses group for argument */
 	bool (*test[3])(void);        /* Conditions to match, make sure the last one is 0x00 */
-	void (*func)(const Arg *arg); /* Function to perform, argument is determined as arg->v from regex above */
-	const Arg arg;                /* Argument to func(), if empty will fill .v = re_match */
+	Deed *deeds;
 } Command;
 
 /* ENUMS */
@@ -146,6 +148,11 @@ enum { /* To use in Undo.flags */
 	UndoIns  = 1,    /* This undo is an insert (otherwise a delete) */
 	UndoMore = 1<<1, /* This undo must be chained with the next one when redoing */
 	RedoMore = 1<<2, /* This undo must be chained with the next one when undoing */
+};
+
+enum {
+	DoChkIns      = 1 << 0,
+	DoNullAsGiven = 1 << 1,
 };
 
 /* Constants */
@@ -765,6 +772,14 @@ i_dotests(bool (*const a[])(void)) {
 		} else return TRUE;
 }
 
+void
+i_do(Deed *deeds, int flags, const Arg arg) {
+	for (int ii = 0; deeds[ii].func; ii++) {
+		if (flags & DoChkIns && deeds[ii].func != f_insert) statusflags&=~(S_GroupUndo);
+		deeds[ii].func (flags & DoNullAsGiven && deeds[ii].arg.i == 0 ? &arg : &(deeds[ii].arg));
+	}
+}
+
 void /* Main editing loop */
 i_edit(void) {
 	int ch, i;
@@ -813,8 +828,7 @@ i_edit(void) {
 #endif /* HANDLE_MOUSE */
 			for(i=0; i<LENGTH(curskeys); i++) {
 				if(ch == curskeys[i].keyv.i && i_dotests(curskeys[i].test) ) {
-					if(curskeys[i].func != f_insert) statusflags&=~(S_GroupUndo);
-					curskeys[i].func(&(curskeys[i].arg));
+					i_do(curskeys[i].deeds, DoChkIns, (Arg){ 0 });
 					break;
 				}
 			}
@@ -836,8 +850,7 @@ i_edit(void) {
 		if(!(statusflags&S_InsEsc) && ISCTRL(c[0])) {
 			for(i=0; i<LENGTH(stdkeys); i++) {
 				if(memcmp(c, stdkeys[i].keyv.c, sizeof stdkeys[i].keyv.c) == 0 && i_dotests(stdkeys[i].test) ) {
-					if(stdkeys[i].func != f_insert) statusflags&=~(S_GroupUndo);
-					stdkeys[i].func(&(stdkeys[i].arg));
+					i_do(stdkeys[i].deeds, DoChkIns, (Arg){ 0 });
 					break;
 				}
 			}
@@ -951,7 +964,7 @@ i_mouse(void) {
 			if(clks[i].place[0]) fcur=f;
 			if(clks[i].place[1]) fsel=f;
 			if(i_dotests(clks[i].test)) {
-				if(clks[i].func) clks[i].func(&(clks[i].arg));
+				i_do (clks[i].deeds, 0, (Arg){ 0 });
 				break;
 			}
 		}
@@ -1081,8 +1094,7 @@ i_readfifo(void) {
 		for(i=0; i<LENGTH(cmds); i++)
 			if(!regexec(cmd_res[i], buf, 2, result, 0) && i_dotests(cmds[i].test) ) {
 				*(buf+result[1].rm_eo) = '\0';
-				if(cmds[i].arg.i > 0) cmds[i].func(&(cmds[i].arg));
-				else cmds[i].func(&(const Arg){ .v = (buf+result[1].rm_so)});
+				i_do(cmds[i].deeds, DoNullAsGiven, (Arg){ .v = (buf + result[1].rm_so) });
 				break;
 			}
 		buf=strtok(NULL, "\n");
