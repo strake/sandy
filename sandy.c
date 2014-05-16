@@ -697,7 +697,7 @@ i_cleanup(int sig) {
 	free(title);
 	for(i=0; i<LENGTH(cmds); i++)
 		regfree(cmd_res[i]);
-	for(i=0; i<LENGTH(syntaxes); i++)
+	if (HILIGHT_SYNTAX) for(i=0; i<LENGTH(syntaxes); i++)
 		regfree(syntax_file_res[i]);
 	if(syntx >= 0) for(i=0; i<SYN_COLORS; i++)
 			regfree(syntax_res[syntx][i]);
@@ -1226,7 +1226,7 @@ i_setup(void){
 		xregcomp(cmd_res[i], cmds[i].re_text, REG_EXTENDED|REG_ICASE|REG_NEWLINE);
 	}
 
-	for(i=0; i<LENGTH(syntaxes); i++) {
+	if (HILIGHT_SYNTAX) for(i=0; i<LENGTH(syntaxes); i++) {
 		if((syntax_file_res[i]=(regex_t*)calloc(1, sizeof (regex_t))) == NULL) i_die("Can't malloc.\n");
 		xregcomp(syntax_file_res[i], syntaxes[i].file_re_text, REG_EXTENDED|REG_NOSUB|REG_ICASE|REG_NEWLINE);
 		for(j=0; j<SYN_COLORS; j++)
