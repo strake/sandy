@@ -7,6 +7,7 @@
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <string.h>
 #include <unistd.h>
 #include <sys/ioctl.h>
@@ -277,6 +278,16 @@ static regex_t *cmd_res[LENGTH(cmds)];
 static regex_t *syntax_file_res[LENGTH(syntaxes)];
 static regex_t *syntax_res[LENGTH(syntaxes)][SYN_COLORS];
 
+static void
+xregcomp(regex_t *p_re, const char *s, int flags) {
+	int c=regcomp(p_re, s, flags);
+	if(c != 0) {
+		uint8_t msg[4096];
+		regerror(c, p_re, msg, 4096);
+		i_die(msg);
+	}
+}
+
 /* F_* FUNCTIONS
 	Can be linked to an action or keybinding. Always return void and take const Arg* */
 
@@ -486,7 +497,7 @@ f_syntax(const Arg *arg) {
 				   : !regexec(syntax_file_res[i], filename, 1, NULL, 0)) {
 			for(j=0; j<SYN_COLORS; j++) {
 				if((syntx >= 0) && syntax_res[syntx][j]) regfree(syntax_res[syntx][j]);
-				if(syntaxes[i].re_text[j] && regcomp(syntax_res[i][j], syntaxes[i].re_text[j], REG_EXTENDED|REG_NEWLINE)) i_die("Faulty regex.\n");
+				xregcomp(syntax_res[i][j], syntaxes[i].re_text[j], REG_EXTENDED|REG_NEWLINE);
 			}
 			syntx=i;
 			setenv(envs[EnvSyntax], syntaxes[syntx].name, 1);
@@ -1197,12 +1208,12 @@ i_setup(void){
 
 	for(i=0; i<LENGTH(cmds); i++) {
 		if((cmd_res[i]=(regex_t*)calloc(1, sizeof (regex_t))) == NULL) i_die("Can't malloc.\n");
-		if(regcomp(cmd_res[i], cmds[i].re_text, REG_EXTENDED|REG_ICASE|REG_NEWLINE)) i_die("Faulty regex.\n");
+		xregcomp(cmd_res[i], cmds[i].re_text, REG_EXTENDED|REG_ICASE|REG_NEWLINE);
 	}
 
 	for(i=0; i<LENGTH(syntaxes); i++) {
 		if((syntax_file_res[i]=(regex_t*)calloc(1, sizeof (regex_t))) == NULL) i_die("Can't malloc.\n");
-		if(regcomp(syntax_file_res[i], syntaxes[i].file_re_text, REG_EXTENDED|REG_NOSUB|REG_ICASE|REG_NEWLINE)) i_die("Faulty regex.\n");
+		xregcomp(syntax_file_res[i], syntaxes[i].file_re_text, REG_EXTENDED|REG_NOSUB|REG_ICASE|REG_NEWLINE);
 		for(j=0; j<SYN_COLORS; j++)
 			if((syntax_res[i][j]=(regex_t*)calloc(1, sizeof (regex_t))) == NULL) i_die("Can't malloc.\n");
 	}
