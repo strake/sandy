@@ -142,7 +142,7 @@ static const Click clks[] = {
 /* mouse mask,           fcur / fsel,      tests,                            func,       arg */
 {BUTTON1_CLICKED,        { TRUE , TRUE  }, { 0,     0,     0 }, (Deed []){ { 0,          { 0 } },              { 0 } } },
 {BUTTON3_CLICKED,        { TRUE , FALSE }, { t_sel, 0,     0 }, (Deed []){ { f_pipero,   TOSEL },              { 0 } } },
-{BUTTON2_CLICKED,        { FALSE, FALSE }, { 0,     0,     0 }, (Deed []){ { f_pipenull, FROMSEL },            { 0 } } },
+{BUTTON2_CLICKED,        { TRUE , FALSE }, { 0,     0,     0 }, (Deed []){ { f_pipenull, FROMSEL },            { 0 } } },
 //{BUTTON4_CLICKED,        { FALSE, FALSE }, { 0,     0,     0 }, (Deed []){ { f_move,     { .m = m_prevscr } }, { 0 } } },
 //{BUTTON5_CLICKED,        { FALSE, FALSE }, { 0,     0,     0 }, (Deed []){ { f_move,     { .m = m_nextscr } }, { 0 } } },
 /* ^^ NCurses is a sad old library.... it does not include button 5 nor cursor movement in its mouse declaration by default */
