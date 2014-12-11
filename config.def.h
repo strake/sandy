@@ -158,7 +158,7 @@ static const Command cmds[] = { /* REMEMBER: if(arg == 0) arg.v=regex_match */
 {"^/(.*)$",         { 0,     0,    0 }, (Deed []){ { f_findfw, { 0 } },                 { 0 } } },
 {"^\\?(.*)$",       { 0,     0,    0 }, (Deed []){ { f_findbw, { 0 } },                 { 0 } } },
 {"^![ \t]*(.*)$",   { t_rw,  0,    0 }, (Deed []){ { f_pipe,   { 0 } },                 { 0 } } },
-{"^![ /t]*(.*)$",   { 0,     0,    0 }, (Deed []){ { f_pipero, { 0 } },                 { 0 } } },
+{"^![ \t]*(.*)$",   { 0,     0,    0 }, (Deed []){ { f_pipero, { 0 } },                 { 0 } } },
 {"^w[ \t]*(.*)$",   { t_mod, t_rw, 0 }, (Deed []){ { f_save,   { 0 } },                 { 0 } } },
 {"^syntax (.*)$",   { 0,     0,    0 }, (Deed []){ { f_syntax, { 0 } },                 { 0 } } },
 {"^offset (.*)$",   { 0,     0,    0 }, (Deed []){ { f_offset, { 0 } },                 { 0 } } },
