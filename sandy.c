@@ -206,6 +206,7 @@ static void f_suspend(const Arg*);
 static void f_syntax(const Arg *arg);
 static void f_toggle(const Arg *arg);
 static void f_undo(const Arg*);
+static void f_swapchars(const Arg*);
 
 /* i_* funcions are called from inside the main code only */
 static Filepos        i_addtext(char*, Filepos);
@@ -544,6 +545,20 @@ f_undo(const Arg *arg) {
 		statusflags^=S_Modified;
 	else
 		statusflags|=S_Modified;
+}
+
+void
+f_swapchars(const Arg *arg) {
+	char *r, *s, *t;
+	Filepos p = m_prevchar(fcur), q = m_nextchar(fcur);
+	s = i_gettext(p, fcur);
+	t = i_gettext(fcur, q);
+	i_addundo(0, p, q, i_gettext(p, q)); undos[0].flags |= RedoMore;
+	i_deltext(p, q);
+	i_addtext(t, p);
+	i_addtext(s, fcur);
+	i_addundo(1, p, q, i_gettext(p, q)); undos[0].flags |= UndoMore;
+	fcur = q;
 }
 
 
