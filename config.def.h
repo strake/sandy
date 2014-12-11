@@ -120,7 +120,10 @@ static const Key stdkeys[] = {
 { .keyv.c = CONTROL('R'), { 0,     0,    0,   0 },  (Deed []){ { f_spawn,     FINDBW },                { 0 } } },
 { .keyv.c = CONTROL('S'), { t_sel, 0,    0,   0 },  (Deed []){ { f_findfw,    { 0 } },                 { 0 } } },
 { .keyv.c = CONTROL('S'), { 0,     0,    0,   0 },  (Deed []){ { f_spawn,     FIND },                  { 0 } } },
-{ .keyv.c = CONTROL('T'), { 0,     0,    0,   0 },  (Deed []){ { f_pipero ,   TOCLIP },                { 0 } } },
+//{ .keyv.c = CONTROL('T'), { 0,     0,    0,   0 },  (Deed []){ { f_pipero,    TOCLIP },                { 0 } } },
+{ .keyv.c = CONTROL('T'), { t_bol, 0,    0,   0 },  (Deed []){ { 0 } } },
+{ .keyv.c = CONTROL('T'), { t_eol, 0,    0,   0 },  (Deed []){ { 0 } } },
+{ .keyv.c = CONTROL('T'), { t_rw,  0,    0,   0 },  (Deed []){ { f_swapchars, { 0 } },                 { 0 } } },
 { .keyv.c = CONTROL('U'), { t_bol, t_rw, 0,   0 },  (Deed []){ { f_delete,    { .m = m_prevchar } },   { 0 } } },
 { .keyv.c = CONTROL('U'), { t_rw,  0,    0,   0 },  (Deed []){ { f_delete,    { .m = m_bol } },        { 0 } } },
 { .keyv.c = CONTROL('V'), { t_rw,  0,    0,   0 },  (Deed []){ { f_toggle,    { .i = S_InsEsc } },     { 0 } } },
@@ -134,7 +137,8 @@ static const Key stdkeys[] = {
 { .keyv.c = META('6'),    { t_rw,  0,    0,   0 },  (Deed []){ { f_pipeline,  { .v = "tr -d '\n'" } }, { 0 } } }, /* Join lines */
 { .keyv.c = META('5'),    { t_sel, t_rw, 0,   0 },  (Deed []){ { f_spawn,     REPLACE },               { 0 } } },
 { .keyv.c = CONTROL('_'), { t_undo,t_rw, 0,   0 },  (Deed []){ { f_undo,      { .i = 1 } },            { 0 } } },
-{ .keyv.c = CONTROL('?'), { t_rw,  0,    0,   0 },  (Deed []){ { f_delete,    { .m = m_prevchar } },   { 0 } } },
+{ .keyv.c = CONTROL('?'), { t_sel, t_rw, 0,   0 },  (Deed []){ { f_delete,    { .m = m_tosel    } },   { 0 } } },
+{ .keyv.c = CONTROL('?'), { t_rw,  0,    0,   0 },  (Deed []){ { f_delete,    { .m = m_nextchar } },   { 0 } } },
 };
 
 #if HANDLE_MOUSE
