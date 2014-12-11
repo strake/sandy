@@ -126,7 +126,7 @@ static const Key stdkeys[] = {
 { .keyv.c = CONTROL('V'), { t_rw,  0,    0,   0 },  (Deed []){ { f_toggle,    { .i = S_InsEsc } },     { 0 } } },
 { .keyv.c = CONTROL('W'), { t_rw,  0,    0,   0 },  (Deed []){ { f_delete,    { .m = m_prevword } },   { 0 } } },
 { .keyv.c = CONTROL('X'), { t_rw,  0,    0,   0 },  (Deed []){ { f_save,      { 0 } },                 { 0 } } },
-{ .keyv.c = META('x'),    { 0,     0,    0,   0 },  (Deed []){ { f_spawn,     CMD_P },                 { 0 } } },
+{ .keyv.c = META('x'),    { 0,     0,    0,   0 },  (Deed []){ { f_spawn,     EXTPROG },               { 0 } } },
 { .keyv.c = CONTROL('Y'), { t_rw,  0,    0,   0 },  (Deed []){ { f_pipenull,  FROMCLIP },              { 0 } } },
 { .keyv.c = CONTROL('Z'), { 0     ,0,    0,   0 },  (Deed []){ { f_suspend,   { 0 } },                 { 0 } } },
 { .keyv.c = CONTROL('^'), { t_redo,t_rw, 0,   0 },  (Deed []){ { f_undo,      { .i = -1 } },           { 0 } } },
