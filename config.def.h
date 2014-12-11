@@ -43,6 +43,7 @@ static void f_pipenull(const Arg*);
 #define SAVEAS  PROMPT("Save as:",     "${SANDY_FILE}",   "w")
 #define REPLACE PROMPT("Replace:",     "",                "!echo -n ")
 #define SED     PROMPT("Sed:",         "",                "!sed ")
+#define EXTPROG PROMPT("Prog+Argu:",   "",                "!")
 #define CMD_P   PROMPT("Command:",     "/\n?\nw\nq\n!\nsyntax\noffset\nicase\nro\nai\ndump", "")
 
 /* Args to f_pipe and friends, simple examples are inlined instead */
