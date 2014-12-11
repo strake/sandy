@@ -34,7 +34,7 @@ static void f_pipenull(const Arg*);
 /* Args to f_spawn */
 #define PROMPT(prompt, default, cmd) { .v = (const char *[]){ "/bin/sh", "-c", \
 	"if slmenu -v >/dev/null 2>&1; then arg=\"`echo \\\"" default "\\\" | slmenu -t -p '" prompt "'`\";" \
-	"else printf \"\033[0;0H\033[7m"prompt"\033[K\033[0m \" >&2; read arg; fi &&" \
+	"else printf \"\x1B[16777216;0H\x1B[7m"prompt"\x1B[K\x1B[0m \" >&2; read arg; fi &&" \
 	"echo " cmd "\"$arg\" > ${SANDY_FIFO}", NULL } }
 
 #define FIND    PROMPT("Find:",        "${SANDY_FIND}",   "/")
