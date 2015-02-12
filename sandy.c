@@ -626,7 +626,7 @@ i_addtext(char *buf, Filepos pos){
 
 	vlines=VLINES(l);
 	for(c=buf[0]; c!='\0'; c=buf[++i]){
-		if(c=='\n' || c=='\r') { /* New line */
+		if(c=='\n') { /* New line */
 			if(((lnew=(Line*)malloc(sizeof(Line))) == NULL) ||
 				((lnew->c=calloc(1, LINSIZ)) == NULL))
 				i_die("Can't malloc.\n");
