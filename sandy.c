@@ -44,6 +44,8 @@
 #define FIXPREV(pos)  while(isutf8 && ISFILL(pos.l->c[pos.o]) && --pos.o > 0)
 #define LINES2        (lines - (titlewin==NULL?0:1))
 
+#define MIN(a, b) ((a) < (b) ? (a) : (b))
+
 /* Typedefs */
 typedef struct Line Line;
 struct Line {        /** The internal representation of a line of text */
@@ -293,6 +295,13 @@ xregcomp(regex_t *p_re, const char *s, int flags) {
 		regerror(c, p_re, msg, 4096);
 		i_die(msg);
 	}
+}
+
+static inline size_t
+f_pos_unicol(Filepos pos) {
+	size_t n = 0;
+	for (char* p = pos.l->c; p - pos.l->c < MIN(pos.o, pos.l->len); p += UTF8LEN(*p)) n++;
+	return n;
 }
 
 /* F_* FUNCTIONS
@@ -1484,7 +1493,7 @@ i_update(void) {
 			(!t_rw()?"[RO]":""),
 			(statusflags&S_CaseIns?"[icase]":""),
 			(statusflags&S_AutoIndent?"[ai]":""),
-			ncur, (int)fcur.o,
+			ncur, (int)f_pos_unicol(fcur),
 			(scrline==fstline?
 				(nlst<lines3?"All":"Top"):
 				(nlst-nscr<lines3?"Bot":buf)
