@@ -1526,21 +1526,23 @@ i_usage(void) {
 
 bool /* Write buffer to disk */
 i_writefile(char *fname) {
-	int fd=1; /* default: write to stdout */
-	bool wok=TRUE;
-	Line *l;
+	FILE* f = stdout;
+	bool wok = TRUE;
 
-	if (fname != NULL && (fd = open(fname, O_WRONLY|O_TRUNC|O_CREAT, S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP|S_IROTH|S_IWOTH)) == -1) {
+	if (fname && !(f = fopen(fname, "w"))) {
 		/* error */
 		tmptitle="WARNING! Can't save file!!!";
 		return FALSE;
 	}
 
-	for(l=fstline; wok && l; l=l->next) {
-		if(write(fd, l->c, l->len) == -1 ||
-			(l->next && write(fd, "\n", 1) == -1)) wok=FALSE;
+	for (Line* l = fstline; l; l = l->next) {
+		if ((l->len > 0 && !fwrite(l->c, l->len, 1, f)) || (l->next && EOF == fputc('\n', f))) {
+			wok=FALSE;
+			break;
+		}
 	}
-	if(fd!=1) close(fd);
+	fflush(f);
+	if (fname) fclose(f);
 	return wok;
 }
 
