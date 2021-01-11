@@ -1526,10 +1526,19 @@ i_usage(void) {
 
 bool /* Write buffer to disk */
 i_writefile(char *fname) {
+        char fmt[] = "%s.XXXXXX";
+        char* tmpfname = 0;
+	if (fname) {
+		tmpfname = malloc(snprintf(0, 0, fmt, fname) + 1);
+	        if (!tmpfname) return FALSE;
+	        sprintf(tmpfname, fmt, fname);
+	}
+
+	int fd = 1;
 	FILE* f = stdout;
 	bool wok = TRUE;
 
-	if (fname && !(f = fopen(fname, "w"))) {
+	if (tmpfname && ((fd = mkostemps(tmpfname, 0, 0)) < 0 || fchmod(fd, 0666) < 0 || !(f = fdopen(fd, "w+")))) {
 		/* error */
 		tmptitle="WARNING! Can't save file!!!";
 		return FALSE;
@@ -1542,7 +1551,10 @@ i_writefile(char *fname) {
 		}
 	}
 	fflush(f);
-	if (fname) fclose(f);
+	if (tmpfname) {
+		fclose(f);
+		wok &= rename(tmpfname, fname) >= 0;
+	}
 	return wok;
 }
 
